@@ -44,6 +44,10 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
+# Produce some useful derivatives
+string(TOUPPER ${MSP_MCU} MSP_MCU_UPPER)
+string(TOLOWER ${MSP_MCU} MSP_MCU_LOWER)
+
 ###############################################################################
 #                    MCU family/Toolchain specific                            #
 ###############################################################################

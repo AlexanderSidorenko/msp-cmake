@@ -12,7 +12,7 @@ CMAKE_FORCE_C_COMPILER(msp430-gcc GNU)
 CMAKE_FORCE_CXX_COMPILER(msp430-g++ GNU)
 
 set(CMAKE_C_FLAGS "-mmcu=${MSP_MCU}" CACHE STRING "C flags")
-set(CMAKE_CXX_FLAGS "-mmcu=${MSP_MCU}" CACHE STRING "CXX flags")
+set(CMAKE_CXX_FLAGS "-mmcu=${MSP_MCU} -nodefaultlibs" CACHE STRING "CXX flags")
 
 if(UNIX)
     set(CMAKE_FIND_ROOT_PATH /usr/lib/gcc/msp430/)
