@@ -10,9 +10,9 @@
 # This file has default configuration
 
 # Default MSP toolchain. List of supported toolchains:
-# msp-gcc       - GNU family of cross-compilers for MSP
+# gcc           - GNU family of cross-compilers for MSP
 # ti            - TI's MSP compiler
-set(MSP_DEFAULT_TOOLCHAIN msp-gcc)
+set(MSP_DEFAULT_TOOLCHAIN gcc)
 
 # Default MSP family. List of supported MSP families:
 # msp430       - MSP430 family of processors
