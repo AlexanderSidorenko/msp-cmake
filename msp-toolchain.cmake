@@ -11,10 +11,6 @@ cmake_minimum_required(VERSION 2.8)
 
 include(${CMAKE_CURRENT_LIST_DIR}/msp-config.cmake)
 
-if (DEFINED CMAKE_CROSSCOMPILING)
-    return()
-endif()
-
 ###############################################################################
 #              Set defaults if critical variables are not set                 #
 ###############################################################################
@@ -31,6 +27,11 @@ endif()
 if (NOT MSP_MCU)
     set(MSP_MCU ${MSP_DEFAULT_MCU})
     message(STATUS "MSP_MCU is not defined, defaulting to ${MSP_MCU}")
+endif()
+
+if (NOT MSP_AUTO_UPLOAD)
+    set(MSP_AUTO_UPLOAD ${MSP_DEFAULT_AUTO_UPLOAD})
+    message(STATUS "MSP_AUTO_UPLOAD is not defined, defaulting to ${MSP_AUTO_UPLOAD}")
 endif()
 
 ###############################################################################

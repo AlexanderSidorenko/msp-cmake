@@ -21,3 +21,6 @@ set(MSP_DEFAULT_FAMILY msp430)
 # Default MSP MCU. msp430g2553 is what comes with Launchpad, so let it
 # be default
 set(MSP_DEFAULT_MCU msp430g2553)
+
+# Don't automatically upload firmware by default
+set(MSP_DEFAULT_AUTO_UPLOAD FALSE)

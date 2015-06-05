@@ -11,4 +11,4 @@ cmake_minimum_required(VERSION 2.8)
 
 project(blink_cpp CXX)
 
-add_executable(blink_cpp blink.cpp)
+add_msp_executable(blink_cpp blink.cpp)
