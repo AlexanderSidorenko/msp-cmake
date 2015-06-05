@@ -53,6 +53,7 @@ function(add_msp_executable EXECUTABLE_NAME)
     add_custom_target(
         upload_${EXECUTABLE_NAME} ${UPLOAD_TARGET_ALL_FLAG}
         ${MSPDEBUG_COMMAND_FULL_PATH} ${MSPDEBUG_DRIVER} \"prog ${ELF_FILE}\" exit
+        DEPENDS ${EXECUTABLE_NAME}
         COMMENT "Uploading ${ELF_FILE} into ${MSP_MCU} using ${MSPDEBUG_COMMAND_NAME}")
 
 endfunction(add_msp_executable)
