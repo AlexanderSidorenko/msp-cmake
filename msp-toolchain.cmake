@@ -10,6 +10,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 include(${CMAKE_CURRENT_LIST_DIR}/msp-config.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/utils.cmake)
 
 ###############################################################################
 #              Set defaults if critical variables are not set                 #
