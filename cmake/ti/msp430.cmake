@@ -7,10 +7,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.                    #
 ###############################################################################
 
-# Some constants
-set(TI_BASE_DIR "C:\\ti")
-set(MSPFLASH_COMMAND_NAME msp430flasher)
-set(MSPHEX_COMMAND_NAME hex430)
+include(${CMAKE_CURRENT_LIST_DIR}\\..\\shared.cmake)
 
 # Find CCS
 find_software_if_not_set(CCS_PATH "Code Composer Studio" ${TI_BASE_DIR} "ccs*")
@@ -23,18 +20,7 @@ find_software_if_not_set(CCS_COMPILER_PATH "TI compiler" ${CCS_ALL_COMPILERS_PAT
 # Add compiler into prefix path
 list(APPEND CMAKE_PREFIX_PATH ${CCS_COMPILER_PATH})
 
-# Find MSPFlash
-find_software_if_not_set(MSPFLASH_PATH "${MSPFLASH_COMMAND_NAME}" ${TI_BASE_DIR} "MSP430Flasher*")
-
-find_program(MSPFLASH_COMMAND_FULL_PATH ${MSPFLASH_COMMAND_NAME} PATHS ${MSPFLASH_PATH})
-if (NOT MSPFLASH_COMMAND_FULL_PATH)
-    message(WARNING "Can't find ${MSPFLASH_COMMAND_NAME}! Upload target won't be generated. Please add ${MSPFLASH_COMMAND_NAME} into CMAKE_PREFIX_PATH or CMAKE_PROGRAM_PATH to get upload target.")
-else()
-    find_program(MSPHEX_FULL_PATH ${MSPHEX_COMMAND_NAME})
-    if (NOT MSPHEX_FULL_PATH)
-        message(WARNING "Can't find ${MSPHEX_COMMAND_NAME}! Upload target won't be generated. Please add ${MSPHEX_COMMAND_NAME} into CMAKE_PREFIX_PATH or CMAKE_PROGRAM_PATH to get upload target.")
-    endif()
-endif()
+upload_with_mspflasher_prerequisites()
 
 set(CMAKE_C_COMPILER cl430)
 set(CMAKE_CXX_COMPILER cl430)
@@ -88,25 +74,7 @@ function(add_msp_executable EXECUTABLE_NAME)
 
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${OUT_FILE})
 
-    if (MSPHEX_FULL_PATH AND MSPFLASH_COMMAND_FULL_PATH)
-        # Run conversion
-        add_custom_command(
-            TARGET ${EXECUTABLE_NAME}
-            POST_BUILD
-            COMMAND
-                ${MSPHEX_FULL_PATH} --ti_txt -o ${TXT_FILE} ${OUT_FILE}
-            COMMENT "Converting ${OUT_FILE} into TI TXT file ${TXT_FILE}")
-
-        if (MSP_AUTO_UPLOAD)
-            set(UPLOAD_TARGET_ALL_FLAG ALL)
-        endif()
-
-        add_custom_target(
-            upload_${EXECUTABLE_NAME} ${UPLOAD_TARGET_ALL_FLAG}
-            ${MSPFLASH_COMMAND_FULL_PATH} -w ${TXT_FILE} -z [VCC]
-            DEPENDS ${EXECUTABLE_NAME}
-            COMMENT "Uploading ${TXT_FILE} into ${MSP_MCU} using ${MSPFLASH_COMMAND_NAME}")
-    endif()
+    upload_with_mspflasher_generate_target(${EXECUTABLE_NAME} ${TXT_FILE} ${OUT_FILE})
 
 endfunction(add_msp_executable)
 

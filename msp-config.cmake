@@ -32,3 +32,8 @@ set_variable_if_empty(MSP_MCU msp430g2553)
 
 # Don't automatically upload firmware by default
 set_variable_if_empty(MSP_AUTO_UPLOAD FALSE)
+
+# Typical TI installation path on Windows
+if (WIN32)
+    set_variable_if_empty(TI_BASE_DIR "C:\\ti")
+endif()
