@@ -23,21 +23,17 @@ find_software_if_not_set(CCS_COMPILER_PATH "TI compiler" ${CCS_ALL_COMPILERS_PAT
 # Add compiler into prefix path
 list(APPEND CMAKE_PREFIX_PATH ${CCS_COMPILER_PATH})
 
-# Find installation of ${MSPFLASH_COMMAND_NAME}, if present
-get_last_subdir(${TI_BASE_DIR} "MSP430Flasher*" ALL_MSPFLASH_VERSIONS LATEST_MSPFLASH_VERSION)
-set(MSPFLASH_INSTALLATION ${TI_BASE_DIR}\\${LATEST_MSPFLASH_VERSION})
-if (MSPFLASH_INSTALLATION)
-    message(STATUS "Found \"${MSPFLASH_COMMAND_NAME}\" installation under \"${MSPFLASH_INSTALLATION}\"...")
-endif()
+# Find MSPFlash
+find_software_if_not_set(MSPFLASH_PATH "${MSPFLASH_COMMAND_NAME}" ${TI_BASE_DIR} "MSP430Flasher*")
 
-find_program(MSPFLASH_COMMAND_FULL_PATH ${MSPFLASH_COMMAND_NAME} PATHS ${MSPFLASH_INSTALLATION})
+find_program(MSPFLASH_COMMAND_FULL_PATH ${MSPFLASH_COMMAND_NAME} PATHS ${MSPFLASH_PATH})
 if (NOT MSPFLASH_COMMAND_FULL_PATH)
     message(WARNING "Can't find ${MSPFLASH_COMMAND_NAME}! Upload target won't be generated. Please add ${MSPFLASH_COMMAND_NAME} into CMAKE_PREFIX_PATH or CMAKE_PROGRAM_PATH to get upload target.")
-endif()
-
-find_program(MSPHEX_FULL_PATH ${MSPHEX_COMMAND_NAME})
-if (NOT MSPHEX_FULL_PATH)
-    message(WARNING "Can't find ${MSPHEX_COMMAND_NAME}! Upload target won't be generated. Please add ${MSPHEX_COMMAND_NAME} into CMAKE_PREFIX_PATH or CMAKE_PROGRAM_PATH to get upload target.")
+else()
+    find_program(MSPHEX_FULL_PATH ${MSPHEX_COMMAND_NAME})
+    if (NOT MSPHEX_FULL_PATH)
+        message(WARNING "Can't find ${MSPHEX_COMMAND_NAME}! Upload target won't be generated. Please add ${MSPHEX_COMMAND_NAME} into CMAKE_PREFIX_PATH or CMAKE_PROGRAM_PATH to get upload target.")
+    endif()
 endif()
 
 set(CMAKE_C_COMPILER cl430)
