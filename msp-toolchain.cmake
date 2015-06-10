@@ -9,31 +9,8 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-include(${CMAKE_CURRENT_LIST_DIR}/msp-config.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/utils.cmake)
-
-###############################################################################
-#              Set defaults if critical variables are not set                 #
-###############################################################################
-if (NOT MSP_TOOLCHAIN)
-    set(MSP_TOOLCHAIN ${MSP_DEFAULT_TOOLCHAIN})
-    message(STATUS "MSP_TOOLCHAIN is not defined, defaulting to ${MSP_TOOLCHAIN}")
-endif()
-
-if (NOT MSP_FAMILY)
-    set(MSP_FAMILY ${MSP_DEFAULT_FAMILY})
-    message(STATUS "MSP_FAMILY is not defined, defaulting to ${MSP_FAMILY}")
-endif()
-
-if (NOT MSP_MCU)
-    set(MSP_MCU ${MSP_DEFAULT_MCU})
-    message(STATUS "MSP_MCU is not defined, defaulting to ${MSP_MCU}")
-endif()
-
-if (NOT MSP_AUTO_UPLOAD)
-    set(MSP_AUTO_UPLOAD ${MSP_DEFAULT_AUTO_UPLOAD})
-    message(STATUS "MSP_AUTO_UPLOAD is not defined, defaulting to ${MSP_AUTO_UPLOAD}")
-endif()
+include(${CMAKE_CURRENT_LIST_DIR}/msp-config.cmake)
 
 ###############################################################################
 #                 Variables common for all toolchains                         #
