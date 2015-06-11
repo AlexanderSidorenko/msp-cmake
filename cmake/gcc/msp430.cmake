@@ -7,14 +7,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.                    #
 ###############################################################################
 
-# TODO For now, I use TI's MSPFlasher to upload into MCU; it add dependency on TI toolchain.
-# GDB/GCC toolchain should be used instead.
-# TODO REMOVE_TI is used in this file to mark code that uses TI toolchain
-# for the sake of MSPFlasher and should be removed in the future.
-
 include(CMakeForceCompiler)
-# TODO REMOVE_TI
-include(${CMAKE_CURRENT_LIST_DIR}\\..\\shared.cmake)
 
 # Add compiler into prefix path
 if (UNIX)
@@ -38,12 +31,10 @@ elseif(WIN32)
     # Add GCC into prefix path
     list(APPEND CMAKE_PREFIX_PATH ${GCC_PATH})
 
-    # TODO REMOVE_TI
-    find_software_if_not_set(CCS_PATH "Code Composer Studio" ${TI_BASE_DIR} "ccs*")
-    set(CCS_ALL_COMPILERS_PATH ${CCS_PATH}\\tools\\compiler)
-    find_software_if_not_set(CCS_COMPILER_PATH "TI compiler" ${CCS_ALL_COMPILERS_PATH} "msp430_*")
-    list(APPEND CMAKE_PREFIX_PATH ${CCS_COMPILER_PATH})
-    upload_with_mspflasher_prerequisites()
+    set(GDB_COMMAND_NAME msp430-elf-gdb)
+    find_program(GDB_COMMAND_FULL_PATH ${GDB_COMMAND_NAME})
+    set(GDB_AGENT_COMMAND_NAME gdb_agent_console)
+    find_program(GDB_AGENT_FULL_PATH ${GDB_AGENT_COMMAND_NAME})
 
     # MSP GCC on Windows requires us to explicitly add include directories
     set(GCC_COMMON_FLAGS "${GCC_COMMON_FLAGS} -I\"${GCC_PATH}\\include\"")
@@ -77,8 +68,6 @@ function(add_msp_executable EXECUTABLE_NAME)
     endif()
 
     set(ELF_FILE ${EXECUTABLE_NAME}_${MSP_MCU_UPPER}.elf)
-    # TODO REMOVE_TI
-    set(TXT_FILE ${EXECUTABLE_NAME}_${MSP_MCU_UPPER}.txt)
 
     add_executable(${EXECUTABLE_NAME} ${ARGN})
 
@@ -98,9 +87,26 @@ function(add_msp_executable EXECUTABLE_NAME)
                 COMMENT "Uploading ${ELF_FILE} into ${MSP_MCU} using ${MSPDEBUG_COMMAND_NAME}")
         endif()
     else()
-        # Generate upload target using MSPFLASHER_COMMAND_NAME for now.
-        # TODO REMOVE_TI
-        upload_with_mspflasher_generate_target(${EXECUTABLE_NAME} ${TXT_FILE} ${ELF_FILE})
+        if (NOT GDB_AGENT_FULL_PATH)
+            message(WARNING "Can't find ${GDB_AGENT_FULL_PATH}! start_gdb_agent target won't be generated. Please add ${GDB_AGENT_FULL_PATH} into CMAKE_PREFIX_PATH or CMAKE_PROGRAM_PATH to get upload target.")
+        else()
+            if (NOT TARGET start_gdb_agent)
+                add_custom_target(
+                    start_gdb_agent
+                    START ${GDB_AGENT_FULL_PATH} ${GCC_PATH}\\${MSP_FAMILY}.dat
+                    COMMENT "Starting GDB Agent ...")
+            endif()
+        endif()
+
+        if (NOT GDB_COMMAND_FULL_PATH)
+            message(WARNING "Can't find ${GDB_COMMAND_NAME}! Upload target won't be generated. Please add ${GDB_COMMAND_NAME} into CMAKE_PREFIX_PATH or CMAKE_PROGRAM_PATH to get upload target.")
+        else()
+            add_custom_target(
+                upload_and_debug_${EXECUTABLE_NAME} ${UPLOAD_TARGET_ALL_FLAG}
+                ${GDB_COMMAND_FULL_PATH} -ex "target remote :55000" -ex "load" ${ELF_FILE}
+                DEPENDS ${EXECUTABLE_NAME}
+                COMMENT "Uploading ${ELF_FILE} into ${MSP_MCU} and starting debugging using ${GDB_COMMAND_NAME}")
+        endif()
     endif()
 
 endfunction(add_msp_executable)
