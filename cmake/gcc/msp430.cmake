@@ -73,7 +73,10 @@ function(add_msp_executable EXECUTABLE_NAME)
 
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${ELF_FILE})
 
-    if (UNIX)
+    # TODO This line should have been if (UNIX), but for some reason this variable
+    # doesn't get propagated into functions. We only set MSPDEBUG_COMMAND_NAME on UNIX,
+    # so let's use it as a way to test if we are on UNIX.
+    if (MSPDEBUG_COMMAND_NAME)
         # Generate upload target if we can
         if (MSPDEBUG_COMMAND_FULL_PATH)
             if (MSP_AUTO_UPLOAD)
@@ -86,7 +89,7 @@ function(add_msp_executable EXECUTABLE_NAME)
                 DEPENDS ${EXECUTABLE_NAME}
                 COMMENT "Uploading ${ELF_FILE} into ${MSP_MCU} using ${MSPDEBUG_COMMAND_NAME}")
         endif()
-    else()
+    elseif(GDB_COMMAND_NAME)
         if (NOT GDB_AGENT_FULL_PATH)
             message(WARNING "Can't find ${GDB_AGENT_FULL_PATH}! start_gdb_agent target won't be generated. Please add ${GDB_AGENT_FULL_PATH} into CMAKE_PREFIX_PATH or CMAKE_PROGRAM_PATH to get upload target.")
         else()
